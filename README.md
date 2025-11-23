@@ -58,3 +58,18 @@ Helper function predict_and_plot(...) to:
 run inference on a single image
 draw bounding boxes with class label + confidence score
 display results with Matplotlib
+
+
+📁 Suggested Project Structure
+
+Adjust file names to match your repo:
+
+.
+├─ notebooks/
+│  ├─ 01_openimages_fiftyone_export.ipynb   # Download + export Open Images to VOC
+│  ├─ 02_faster_rcnn_training.ipynb        # CustomDataset + training loop + logging
+│  └─ 03_inference_visualization.ipynb     # Run predictions and plot detections
+└─ README.md
+
+
+If you keep everything in a single notebook, just update this section accordingly.
