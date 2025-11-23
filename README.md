@@ -113,3 +113,86 @@ You end up with directories like:
     images/
     annotations/
 ...
+
+
+🧰 Custom Dataset & DataLoader
+
+The CustomDataset:
+
+Accepts one or many dataset roots (e.g. all class folders):
+
+dataset_roots = [
+    "/content/dataset/Dog",
+    "/content/dataset/Cat",
+    ...
+]
+dataset = CustomDataset(dataset_roots, transforms=get_transform(train=True), classes_map=classes_map)
+
+
+Handles XML, JSON, and TXT formats in parse_annotation(...).
+
+Returns (image, target, meta) where:
+
+target["boxes"] → tensor of [xmin, ymin, xmax, ymax]
+
+target["labels"] → class indices
+
+meta holds img_path and ann_path for debugging
+
+Custom collate_fn for DataLoader:
+
+def collate_fn(batch):
+    images, targets, metas = zip(*batch)
+    return list(images), list(targets), list(metas)
+
+data_loader = DataLoader(
+    dataset,
+    batch_size=2,
+    shuffle=True,
+    num_workers=4,
+    collate_fn=collate_fn,
+)
+
+🏋️ Training
+
+Model setup:
+
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+
+def get_model(num_classes):
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+    in_features = model.roi_heads.box_predictor.cls_score.in_features
+    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+    return model
+
+num_classes = 1 + len(classes_map)  # background + object classes
+model = get_model(num_classes).to(device)
+
+
+Optimizer & scheduler:
+
+params = [p for p in model.parameters() if p.requires_grad]
+optimizer = torch.optim.SGD(params, lr=0.005, momentum=0.9, weight_decay=0.0005)
+lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.1)
+
+🔍 Inference & Visualization
+
+The notebook provides a helper like:
+
+def predict_and_plot(image_path, model, device, threshold=0.5):
+    model.eval()
+    img = Image.open(image_path).convert("RGB")
+    transform = T.Compose([T.ToTensor()])
+    img_tensor = transform(img).to(device)
+
+    with torch.no_grad():
+        prediction = model([img_tensor])
+
+    # plot image and draw bounding boxes + labels above threshold
+
+
+Draws red rectangles for detections
+
+Labels each box with class_name and confidence score
+
+Uses reverse_classes_map to convert integer labels back to strings
