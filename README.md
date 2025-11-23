@@ -73,3 +73,43 @@ pip install opencv-python  # optional, if you add OpenCV-based utilities
 
 
 💡 The notebooks are written with Google Colab-like paths in mind (/content/...).
+
+
+🗂 Data Preparation (FiftyOne + Open Images)
+
+Select classes
+The notebook defines:
+
+classes = ["Dog", "Cat", "Deer", "Bear", "Bird", "Person", "Car", "Truck", "Airplane"]
+
+
+Download with FiftyOne Zoo
+
+For each class, the notebook:
+
+dataset = foz.load_zoo_dataset(
+    "open-images-v6",
+    split="train",
+    classes=[cls],
+    max_samples=500,  # tune as needed
+    shuffle=True,
+)
+
+
+Export to Pascal VOC
+
+Export each class to a folder like /content/dataset/<ClassName> with:
+
+dataset.export(
+    export_dir=export_dir,
+    dataset_type=fot.VOCDetectionDataset,
+    label_field="detections",
+)
+
+
+You end up with directories like:
+
+/content/dataset/Dog/
+    images/
+    annotations/
+...
