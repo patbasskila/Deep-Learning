@@ -60,16 +60,16 @@ draw bounding boxes with class label + confidence score
 display results with Matplotlib
 
 
-📁 Suggested Project Structure
+📦 Requirements
 
-Adjust file names to match your repo:
+Typical dependencies:
 
-.
-├─ notebooks/
-│  ├─ 01_openimages_fiftyone_export.ipynb   # Download + export Open Images to VOC
-│  ├─ 02_faster_rcnn_training.ipynb        # CustomDataset + training loop + logging
-│  └─ 03_inference_visualization.ipynb     # Run predictions and plot detections
-└─ README.md
+pip install torch torchvision fiftyone matplotlib
 
 
-If you keep everything in a single notebook, just update this section accordingly.
+You may also need:
+
+pip install opencv-python  # optional, if you add OpenCV-based utilities
+
+
+💡 The notebooks are written with Google Colab-like paths in mind (/content/...).
